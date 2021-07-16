@@ -1,12 +1,11 @@
 """Flask app for adopt app."""
 
 from flask import Flask, render_template, redirect
-
 from flask_debugtoolbar import DebugToolbarExtension
-
 from models import db, connect_db, Pet
-
 from forms import AddPetForm, EditPetForm
+from super_secret_secrets import AUTH_TOKEN
+import requests
 
 app = Flask(__name__)
 
@@ -47,8 +46,6 @@ def add_pet():
         photo_url = form.photo_url.data
         notes = form.notes.data
 
-        pet = Pet(form.data)
-
         pet = Pet(name=name,
                 species=species,
                 age=age,
@@ -73,6 +70,8 @@ def show_and_edit_pet_detail(pet_id):
     pet = Pet.query.get(pet_id)
     form = EditPetForm()
 
+    # form.photo_url.data = form.photo_url.data.lower()
+
     if form.validate_on_submit():
 
         pet.photo_url = form.photo_url.data
@@ -85,3 +84,7 @@ def show_and_edit_pet_detail(pet_id):
 
     else:
         return render_template("pet_detail.html", pet=pet, form=form)
+
+r = requests.get('https://api.petfinder.com/v2/animals',
+             headers={"Authorization": f"Bearer {AUTH_TOKEN}"},
+             params={"limit":"100"})
