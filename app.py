@@ -4,8 +4,7 @@ from flask import Flask, render_template, redirect
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, Pet
 from forms import AddPetForm, EditPetForm
-from super_secret_secrets import AUTH_TOKEN
-import requests
+from pet_finder_api import get_oauth_token, get_random_pet
 
 app = Flask(__name__)
 
@@ -25,13 +24,28 @@ db.create_all()
 toolbar = DebugToolbarExtension(app)
 
 
+auth_token = None
+
+@app.before_first_request
+def refresh_credentials():
+    """Just once, get token and store it globally."""
+
+    global auth_token
+    auth_token = get_oauth_token()
+
+
 @app.route("/")
 def show_homepage():
-    """ Displays pets on homepage """
+    """ Displays our pets on homepage, gets and displays a random pet
+        from PetFinder API
+        """
 
     pets = Pet.query.all()
+    random_pet = get_random_pet(auth_token)
 
-    return render_template("index.html", pets=pets)
+    return render_template("index.html", pets=pets, random_pet=random_pet)
+
+
 
 @app.route("/add", methods=['GET','POST'])
 def add_pet():
@@ -85,6 +99,8 @@ def show_and_edit_pet_detail(pet_id):
     else:
         return render_template("pet_detail.html", pet=pet, form=form)
 
-r = requests.get('https://api.petfinder.com/v2/animals',
+
+
+    r = requests.get('https://api.petfinder.com/v2/animals',
              headers={"Authorization": f"Bearer {AUTH_TOKEN}"},
              params={"limit":"100"})
