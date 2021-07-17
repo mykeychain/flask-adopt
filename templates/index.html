@@ -13,7 +13,8 @@
 {% for pet in pets %}
 <div>
     <a href="/{{pet.id}}">{{pet.name}}</a>
-    <img src="{{pet.photo_url}}" alt="pet photo here">
+    <!-- if condition for photo url -->
+    <img src="{{pet.photo_url}}" alt="image of {{pet.name}}">
     <b>
         {% if pet.available %}
             Available

@@ -2,6 +2,8 @@ from super_secret_secrets import PET_FINDER_API_KEY, API_SECRET
 import requests
 import random
 
+# Base API global const
+
 def get_oauth_token():
     """ Gets an Oauth token from PetFinder API """
 
@@ -16,7 +18,9 @@ def get_oauth_token():
 
 
 def get_random_pet(auth_token):
-    """ Gets a random pet from PetFinder API """
+    """ Gets a random pet from PetFinder API {name, age, photo_url} """
+
+    # max_requested variable for clarity
 
     response = requests.get('https://api.petfinder.com/v2/animals',
              headers={"Authorization": f"Bearer {auth_token}"},

@@ -99,8 +99,3 @@ def show_and_edit_pet_detail(pet_id):
     else:
         return render_template("pet_detail.html", pet=pet, form=form)
 
-
-
-    r = requests.get('https://api.petfinder.com/v2/animals',
-             headers={"Authorization": f"Bearer {AUTH_TOKEN}"},
-             params={"limit":"100"})
